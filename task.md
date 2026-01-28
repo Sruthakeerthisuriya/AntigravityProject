@@ -1,0 +1,32 @@
+# AI-Powered Unit Test Platform - Task List
+
+- [x] Project Initialization
+    - [x] Create initial artifacts (task.md, implementation_plan.md)
+    - [x] Initialize Node.js project (package.json)
+    - [x] Set up project structure (src, config, tests)
+- [x] GitHub Integration
+    - [x] Implement GitHub Webhook listener (Express.js)
+    - [x] Authenticate with GitHub App or Personal Access Token
+    - [x] Implement logic to detect modified files from commits
+    - [x] **Fixed**: Support for URL-encoded webhook payloads
+- [x] AI Test Generation
+    - [x] Design prompt engineering for test generation
+    - [x] Implement AI client using `gemini-flash-latest`
+    - [x] Support for JavaScript (Jest)
+    - [x] Support for Python (PyTest)
+    - [x] Support for Java (JUnit)
+- [x] Test Execution Engine
+    - [x] Create a runner to execute generated tests safely
+    - [x] Parse test execution results (pass/fail)
+    - [x] **Fixed**: Windows path compatibility for Jest
+    - [x] **Fixed**: AI Output Sanitization (Control Character Strip)
+- [x] Reporting & Notifications
+    - [x] Implement basic reporting dashboard (logs)
+    - [x] Integrate MailerSend for full test report emails
+- [x] CI/CD Integration
+    - [x] Create GitHub Actions workflow backbone
+    - [x] Verified end-to-end with real GitHub pushes
+- [x] Dependency Management (New)
+    - [x] Create dependencyService.js for automatic JAR downloads
+    - [x] Integrate JUnit JAR into Java test runner
+    - [x] Verify automatic setup

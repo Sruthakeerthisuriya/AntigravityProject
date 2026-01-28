@@ -1,0 +1,14 @@
+node_modules
+.env
+coverage
+*.log
+temp_src/
+lib/*.jar
+*.class
+tests/Variables/
+.gemini/
+.idea/
+.vscode/
+bin/
+out/
+target/
