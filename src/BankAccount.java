@@ -2,6 +2,7 @@ package com.antigravity;
 
 /**
  * A simple BankAccount class to demonstrate automated test generation.
+ * (Updated to re-trigger test generation)
  */
 public class BankAccount {
 

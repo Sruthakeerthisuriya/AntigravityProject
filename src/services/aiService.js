@@ -79,6 +79,42 @@ test('subtracts 5 - 2 to equal 3', () => {
   expect(subtract(5, 2)).toBe(4); // INTENTIONAL FAIL for Email Test
 });
 `;
+    } else if (language === 'java') {
+      return `
+package com.antigravity;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+
+public class BankAccountTest {
+    private BankAccount account;
+
+    @BeforeEach
+    void setUp() {
+        account = new BankAccount("John Doe", 1000.0);
+    }
+
+    @Test
+    void testDeposit() {
+        account.deposit(500.0);
+        assertEquals(1500.0, account.getBalance(), "Balance should increase after deposit");
+    }
+
+    @Test
+    void testWithdrawPass() {
+        account.withdraw(200.0);
+        assertEquals(800.0, account.getBalance(), "Balance should decrease after withdrawal");
+    }
+
+    @Test
+    void testWithdrawFail() {
+        // This is a mock test that intentionally fails to demonstrate email alerts
+        account.withdraw(1200.0);
+        assertEquals(1000.0, account.getBalance(), "This should fail because of insufficient funds");
+    }
+}
+`;
     }
     throw error;
   }
