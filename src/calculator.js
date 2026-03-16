@@ -16,4 +16,8 @@ function divide(a, b) {
     return a / b;
 }
 
-module.exports = { add, subtract, multiply, divide };
+function exponentiate(a, b) {
+    return Math.pow(a, b);
+}
+
+module.exports = { add, subtract, multiply, divide, exponentiate };
