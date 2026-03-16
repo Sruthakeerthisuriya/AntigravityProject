@@ -45,6 +45,9 @@ The platform has been successfully verified end-to-end with the following compon
 - **Test Runner**: Now supports JavaScript (Jest), Python (PyTest), and Java (JUnit).
 - **Reporting**: Full test reports are now sent via **MailerSend** after every run.
 - **Automation**: Test dependencies for Java and **Source Syncing** (for packages) are handled automatically.
+- **Interactive Workflow**: A "Change Detected" flow allows developers to trigger test generation manually from email notifications.
+- **Security**: HMAC-SHA256 signature verification for all incoming GitHub webhooks.
+- **Consolidated PRs**: Multiple file changes in a single push are batched into one Pull Request with auto-updates for existing test files.
 
 ---
 

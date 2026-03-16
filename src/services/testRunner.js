@@ -11,8 +11,12 @@ const { exec } = require('child_process');
  * @returns {Promise<Object>} - Execution result { success, output, error }
  */
 async function runTests(testCode, fileName, language, sourceCode) {
-  const testDir = path.join(__dirname, '../../tests');
-  const tempSrcDir = path.join(__dirname, '../../temp_src');
+  const jsTestDir = path.join(__dirname, '../../tests');
+  const javaTestDir = path.join(__dirname, '../../java-tests');
+  const javaSrcDir = path.join(__dirname, '../../java');
+
+  const testDir = language === 'java' ? javaTestDir : jsTestDir;
+  const tempSrcDir = javaSrcDir;
 
   if (!fs.existsSync(testDir)) fs.mkdirSync(testDir, { recursive: true });
   if (!fs.existsSync(tempSrcDir)) fs.mkdirSync(tempSrcDir, { recursive: true });
@@ -65,7 +69,7 @@ async function runTests(testCode, fileName, language, sourceCode) {
 
   return new Promise((resolve) => {
     let command;
-    const relativeTestPath = `tests/${testFileName}`;
+    const relativeTestPath = language === 'java' ? `java-tests/${testFileName}` : `tests/${testFileName}`;
 
     if (language === 'javascript') {
       command = `npx jest "${relativeTestPath}"`;
@@ -75,8 +79,8 @@ async function runTests(testCode, fileName, language, sourceCode) {
       const libDir = path.join(__dirname, '../../lib');
       const junitJar = path.join(libDir, 'junit-platform-console-standalone.jar');
 
-      // Classpath must include JUnit JAR, temp_src (for code), and tests folder
-      const classPath = `"${junitJar};${tempSrcDir};${testDir};."`;
+      // Classpath must include JUnit JAR, java (for code), and java-tests folder
+      const classPath = `"${junitJar};${javaSrcDir};${javaTestDir};."`;
 
       command = `javac -cp ${classPath} "${testFilePath}" && java -cp ${classPath} org.junit.platform.console.ConsoleLauncher --select-class ${finalFullClassName}`;
     } else {

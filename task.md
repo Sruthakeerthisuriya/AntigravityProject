@@ -26,7 +26,14 @@
 - [x] CI/CD Integration
     - [x] Create GitHub Actions workflow backbone
     - [x] Verified end-to-end with real GitHub pushes
-- [x] Dependency Management (New)
+- [x] Dependency Management
     - [x] Create dependencyService.js for automatic JAR downloads
     - [x] Integrate JUnit JAR into Java test runner
     - [x] Verify automatic setup
+- [x] **Phase 3: Interactive Automation & Security**
+    - [x] **Interactive Trigger**: Send "Change Detected" email with a button to trigger test generation & PR.
+    - [x] **Consolidate PRs**: Group all tests from a push into a single PR.
+    - [x] **Automatic Updates**: Ensure existing test files in the repo are updated rather than just adding new ones.
+    - [x] **Action Endpoint**: Create `/api/actions/generate` to handle the interactive clicks.
+    - [x] **Webhook Security**: Implement HMAC-SHA256 signature verification.
+    - [x] Update documentation and walkthrough.

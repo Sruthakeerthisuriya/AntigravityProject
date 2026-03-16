@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest"
+    "test": "jest",
+    "test:data": "node scripts/verify_data.js",
+    "tunnel": "npx lt --port 3001 --subdomain test-platform-antigravity"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

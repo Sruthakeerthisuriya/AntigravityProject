@@ -5,7 +5,6 @@ coverage
 temp_src/
 lib/*.jar
 *.class
-tests/Variables/
 .gemini/
 .idea/
 .vscode/

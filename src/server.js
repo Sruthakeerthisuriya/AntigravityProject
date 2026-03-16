@@ -26,7 +26,9 @@ app.get('/', (req, res) => {
 });
 
 const webhookRoutes = require('./routes/webhookRoutes');
+const actionRoutes = require('./routes/actionRoutes');
 app.use('/api/webhook', webhookRoutes);
+app.use('/api/actions', actionRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

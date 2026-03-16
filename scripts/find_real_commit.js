@@ -12,9 +12,9 @@ const octokit = new Octokit({
 });
 
 async function findCommit() {
-    const owner = 'jquery';
-    const repo = 'jquery';
-    console.log(`Scanning ${owner}/${repo} for recent JS commits...`);
+    const owner = 'Sruthakeerthisuriya';
+    const repo = 'Variable';
+    console.log(`Scanning ${owner}/${repo} for recent commits...`);
 
     try {
         // Get list of commits
@@ -35,12 +35,12 @@ async function findCommit() {
                 ref: sha
             });
 
-            const jsFiles = commit.files.filter(f => f.filename.endsWith('.js') && f.status === 'modified');
+            const relevantFiles = commit.files.filter(f => (f.filename.endsWith('.js') || f.filename.endsWith('.java') || f.filename.endsWith('.py')) && f.status === 'modified');
 
-            if (jsFiles.length > 0) {
+            if (relevantFiles.length > 0) {
                 console.log(`\nFOUND SUITABLE COMMIT!`);
                 console.log(`SHA: ${sha}`);
-                console.log(`File: ${jsFiles[0].filename}`);
+                console.log(`File: ${relevantFiles[0].filename}`);
                 // Print a JSON snippet to copy-paste
                 const payload = {
                     repository: { name: repo, owner: { name: owner, login: owner } },
@@ -54,7 +54,7 @@ async function findCommit() {
                 return;
             }
         }
-        console.log("No JS commits found in last 5.");
+        console.log("No relevant commits found in last 30.");
     } catch (e) {
         console.error("Error:", e);
     }
