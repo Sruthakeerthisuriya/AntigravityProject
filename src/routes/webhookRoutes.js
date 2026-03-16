@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const notificationService = require('../services/notificationService');
 
 /**
  * Verify GitHub webhook signature
@@ -14,6 +13,25 @@ function verifySignature(req) {
     const digest = 'sha256=' + hmac.update(JSON.stringify(req.body)).digest('hex');
     
     return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
+}
+
+/**
+ * Determine if a filename is a source file that should have tests generated for it.
+ * Filters out test files to prevent infinite loops.
+ */
+function isSourceFile(filePath) {
+    const supportedExtensions = filePath.endsWith('.java') || filePath.endsWith('.js') || filePath.endsWith('.py');
+    if (!supportedExtensions) return false;
+
+    // Exclude Java test files (e.g. CalculatorTest.java, *Test.java)
+    if (filePath.endsWith('Test.java')) return false;
+
+    // Exclude JS/Python test files in test directories or with .test.js pattern
+    if (filePath.includes('/tests/') || filePath.includes('\\tests\\')) return false;
+    if (filePath.endsWith('.test.js') || filePath.endsWith('.test.py') || filePath.endsWith('.spec.js')) return false;
+    if (filePath.includes('java-tests/')) return false;
+
+    return true;
 }
 
 router.post('/', async (req, res) => {
@@ -35,9 +53,6 @@ router.post('/', async (req, res) => {
 
     // Verify signature if secret is configured
     if (process.env.GITHUB_WEBHOOK_SECRET) {
-        // Note: For URL-encoded payloads, raw body might be different. 
-        // In a real production app, we'd use the raw buffer before any parsing.
-        // For this implementation, we'll assume JSON or properly parsed bodies.
         if (!verifySignature(req)) {
             console.error('Invalid signature');
             return res.status(401).send('Invalid signature');
@@ -51,11 +66,17 @@ router.post('/', async (req, res) => {
     }
 
     if (event === 'push') {
-        const { repository, commits, after: headSha } = payload;
+        const { repository, commits, after: headSha, ref } = payload;
 
         if (!repository || !commits) {
             console.error('Malformed push event payload');
             return res.status(400).send('Malformed payload');
+        }
+
+        // Ignore pushes to AI-generated branches to prevent infinite loops
+        if (ref && ref.includes('ai-tests/')) {
+            console.log(`Ignoring push to AI branch: ${ref}`);
+            return res.status(200).send('Ignoring AI branch - no loop');
         }
 
         const owner = repository.owner?.login || repository.owner?.name;
@@ -67,22 +88,24 @@ router.post('/', async (req, res) => {
             return res.status(400).send('Missing config or identity');
         }
 
-        // Collect unique modified files across all commits in this push
+        // Collect unique modified SOURCE files across all commits in this push
         const modifiedFiles = new Set();
         commits.forEach(commit => {
-            // Note: Webhook payload only has summary. 
-            // We might need to fetch full commit details if we want strictly 'modified/added'.
-            // However, the 'push' payload contains 'added', 'removed', 'modified' arrays in each commit object.
             (commit.added || []).concat(commit.modified || []).forEach(f => {
-                if (f.endsWith('.js') || f.endsWith('.py') || f.endsWith('.java')) {
+                // Only process source files - not test files (prevents infinite loop)
+                if (isSourceFile(f)) {
                     modifiedFiles.add(f);
+                    console.log(`Queuing file for test generation: ${f}`);
+                } else if (f.endsWith('.java') || f.endsWith('.js') || f.endsWith('.py')) {
+                    console.log(`Skipping test/generated file: ${f}`);
                 }
             });
         });
 
         if (modifiedFiles.size > 0) {
             const filesArray = Array.from(modifiedFiles);
-            console.log(`Changes detected in ${filesArray.length} supported files. Triggering automated test generation...`);
+            console.log(`Changes detected in ${filesArray.length} source file(s): ${filesArray.join(', ')}`);
+            console.log(`Triggering automated test generation...`);
 
             // Trigger automated generation in background
             const generationService = require('../services/generationService');
@@ -97,7 +120,8 @@ router.post('/', async (req, res) => {
 
             return res.status(200).send('Automated test generation triggered');
         } else {
-            return res.status(200).send('No relevant file changes');
+            console.log('No source file changes detected - skipping test generation.');
+            return res.status(200).send('No source file changes');
         }
     }
 
